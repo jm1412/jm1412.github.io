@@ -1,0 +1,16 @@
+@import '@picocss/pico/css/pico.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+html, body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: skyblue;
+  }
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+html, body {
+  background-color: var(--pico-background-color);
+  color: var(--pico-color);
+  }
+}
+

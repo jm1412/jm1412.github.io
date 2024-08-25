@@ -1,0 +1,27 @@
+.buttons{
+    text-align: center;
+    padding-left: 15%;
+    padding-right: 15%;
+    padding-top: 0%;
+    padding-bottom: 0%;
+    transform:scale(0.9)
+}
+
+.expenseEntry{
+    margin:1%;
+    padding:5%;
+    box-sizing: border-box;
+    padding: 10px;
+    min-width: 250px;
+    max-width: 400px;
+    flex-shrink: 1;
+    margin:5px auto;;
+}
+
+
+.expenseContainer {
+    width:auto;
+    justify-content: center;
+    max-width:800px !important;
+
+}
