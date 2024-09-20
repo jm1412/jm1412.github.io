@@ -67,22 +67,15 @@ def scrape_mangapark(num_pages=5):
     description_channel.text = "Providing the latest manga release information"
 
     for manga, chapters in manga_dict.items():
-        manga_element = SubElement(channel, 'item')
-        
-        # Manga title as item title
-        manga_title_element = SubElement(manga_element, 'title')
-        manga_title_element.text = manga
-        
-        # Link to the manga
-        manga_link_element = SubElement(manga_element, 'link')
-        manga_link_element.text = f"https://mangapark.com/title/{manga.replace(' ', '-').lower()}"  # Example link format
-
-        # Add chapters as separate items
         for chapter_title, chapter_link in chapters:
-            chapter_element = SubElement(manga_element, 'item')  # New item for each chapter
-            chapter_title_element = SubElement(chapter_element, 'title')
-            chapter_title_element.text = chapter_title
+            manga_title_chapter = f"{manga} - {chapter_title}"
+            chapter_element = SubElement(channel, 'item')  # New item for each chapter
             
+            # Chapter title
+            chapter_title_element = SubElement(chapter_element, 'title')
+            chapter_title_element.text = manga_title_chapter
+            
+            # Direct link to the chapter
             chapter_link_element = SubElement(chapter_element, 'link')
             chapter_link_element.text = f"https://mangapark.com{chapter_link}"
 
