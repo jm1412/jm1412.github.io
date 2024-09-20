@@ -5,42 +5,37 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 import requests
 
 def scrape_mangapark(num_pages=5):
-    print("running: scrape_mangapark")
+    print("Running: scrape_mangapark")
     base_url = 'https://mangapark.com/latest'
-    output_file = os.path.join(os.path.dirname(__file__), 'mangapark_latest.html')
-    xml_output_file = os.path.join(os.path.dirname(__file__), 'manga_updates.xml')
+    output_file = 'mangapark_latest.xml'
     cache_duration = 30 * 60  # 30 minutes in seconds
 
     # Check if the output file exists and is not older than 30 minutes
-    print("checking if file exists")
     if os.path.exists(output_file) and (time.time() - os.path.getmtime(output_file)) < cache_duration:
-        print("file already exists")
+        print("File already exists and is fresh.")
         with open(output_file, 'r', encoding='utf-8') as file:
-            html_content = file.read()
-    else:
-        print("downloading new file")
-        try:
-            for page in range(1, num_pages + 1):
-                url = f"{base_url}?page={page}"
-                response = requests.get(url, proxies={"http": None, "https": None})
-                if response.status_code == 200:
-                    with open(output_file, 'a', encoding='utf-8') as file:
-                        file.write(response.text)
-                else:
-                    print(f"Error fetching page: {response.status_code}")
-                    return
+            xml_string = file.read()
+        return xml_string
 
-            with open(output_file, 'r', encoding='utf-8') as file:
-                html_content = file.read()
+    print("Downloading new data")
+    html_content = ""
+    try:
+        for page in range(1, num_pages + 1):
+            url = f"{base_url}?page={page}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                html_content += response.text
+            else:
+                print(f"Error fetching page: {response.status_code}")
+                return None
 
-        except Exception as e:
-            print(f"Error fetching page: {str(e)}")
-            return
+    except Exception as e:
+        print(f"Error fetching page: {str(e)}")
+        return None
 
-    print("parsing")
+    print("Parsing HTML")
     soup = BeautifulSoup(html_content, 'html.parser')
     manga_dict = {}
-    print("starting to extract")
 
     manga_items = soup.select('.pl-3')
 
@@ -48,12 +43,17 @@ def scrape_mangapark(num_pages=5):
         manga_title = item.find('h3').get_text(strip=True)
         chapters = item.select('a.link-hover.link-primary')
 
-        chapter_list = [(chapter.get_text(strip=True), chapter['href']) for chapter in chapters]
+        # Use a set to avoid duplicates
+        chapter_set = set()
+        for chapter in chapters:
+            chapter_title = chapter.get_text(strip=True)
+            chapter_link = chapter['href']
+            chapter_set.add((chapter_title, chapter_link))
 
-        if chapter_list:
-            manga_dict[manga_title] = manga_dict.get(manga_title, []) + chapter_list
+        if chapter_set:
+            manga_dict[manga_title] = list(chapter_set)
 
-    root = Element('rss', version='2.0')
+    root = Element('rss')
 
     for manga, chapters in manga_dict.items():
         manga_element = SubElement(root, 'manga', title=manga)
@@ -64,11 +64,12 @@ def scrape_mangapark(num_pages=5):
 
     xml_string = tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
-    # Save the XML string to a file
-    with open(xml_output_file, 'w', encoding='utf-8') as xml_file:
-        xml_file.write(xml_string)
-    print(f"XML saved to {xml_output_file}")
+    # Save to XML file
+    with open(output_file, 'w', encoding='utf-8') as file:
+        file.write(xml_string)
 
-# Call the function if running as a standalone script
+    print(f"Data saved to {output_file}")
+    return xml_string
+
 if __name__ == "__main__":
     scrape_mangapark()
