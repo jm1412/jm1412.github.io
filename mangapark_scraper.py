@@ -53,7 +53,7 @@ def scrape_mangapark(num_pages=1):
                 if chapter_link in existing_links:
                     duplicate_count += 1
                     if duplicate_count >= 5:
-                        print("Reached maximum duplicate entries. Stopping.")
+                        print(f"Reached maximum duplicate entries on page: {page}. Stopping.")
                         break
                 else:
                     new_entries.append(new_entry)
