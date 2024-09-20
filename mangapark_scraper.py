@@ -53,14 +53,30 @@ def scrape_mangapark(num_pages=5):
         if chapter_set:
             manga_dict[manga_title] = list(chapter_set)
 
-    root = Element('rss')
+    # Build the XML structure
+    root = Element('rss', xmlns="http://purl.org/rss/1.0/", version="2.0")
+    channel = SubElement(root, 'channel')
+    
+    title_channel = SubElement(channel, 'title')
+    title_channel.text = "Mangapark Scraper"
+    
+    link_channel = SubElement(channel, 'link')
+    link_channel.text = "https://jm1412.github.io/mangapark_latest.xml"
+    
+    description_channel = SubElement(channel, 'description')
+    description_channel.text = "Let's bring back RSS."
 
     for manga, chapters in manga_dict.items():
-        manga_element = SubElement(root, 'manga', title=manga)
+        manga_element = SubElement(channel, 'item')
+        manga_title_element = SubElement(manga_element, 'title')
+        manga_title_element.text = manga
+        
         for chapter_title, chapter_link in chapters:
             chapter_element = SubElement(manga_element, 'chapter')
-            chapter_element.set('title', chapter_title)
-            chapter_element.set('link', f"https://mangapark.com{chapter_link}")
+            chapter_title_element = SubElement(chapter_element, 'title')
+            chapter_title_element.text = chapter_title
+            chapter_link_element = SubElement(chapter_element, 'link')
+            chapter_link_element.text = f"https://mangapark.com{chapter_link}"
 
     xml_string = tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
