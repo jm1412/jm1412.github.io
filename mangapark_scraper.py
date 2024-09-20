@@ -53,16 +53,37 @@ def scrape_mangapark(num_pages=5):
         if chapter_list:
             manga_dict[manga_title] = manga_dict.get(manga_title, []) + chapter_list
 
-    root = Element('manga_updates')
+    # Generate XML structure
+    root = Element('rss', version='2.0')
+    channel = SubElement(root, 'channel')
+    title = SubElement(channel, 'title')
+    title.text = "Manga Updates"
+    description = SubElement(channel, 'description')
+    description.text = "Latest updates from MangaPark"
+    link = SubElement(channel, 'link')
+    link.text = base_url
 
     for manga, chapters in manga_dict.items():
-        manga_element = SubElement(root, 'manga', title=manga)
+        manga_element = SubElement(channel, 'item')
+        manga_title = SubElement(manga_element, 'title')
+        manga_title.text = manga
+        manga_link = SubElement(manga_element, 'link')
+        manga_link.text = f"https://mangapark.com/title/{manga}"
+
         for chapter_title, chapter_link in chapters:
-            chapter_element = SubElement(manga_element, 'chapter')
-            chapter_element.set('title', chapter_title)
-            chapter_element.set('link', f"https://mangapark.com{chapter_link}")
+            chapter_element = SubElement(manga_element, 'item')
+            chapter_title_element = SubElement(chapter_element, 'title')
+            chapter_title_element.text = chapter_title
+            chapter_link_element = SubElement(chapter_element, 'link')
+            chapter_link_element.text = f"https://mangapark.com{chapter_link}"
 
     xml_string = tostring(root, encoding='utf-8', method='xml').decode('utf-8')
+
+    # Save the XML string to a file
+    with open(xml_output_file, 'w', encoding='utf-8') as xml_file:
+        xml_file.write(xml_string)
+    print(f"XML saved to {xml_output_file}")
+
 
     # Save the XML string to a file
     with open(xml_output_file, 'w', encoding='utf-8') as xml_file:
