@@ -5,7 +5,7 @@ import requests
 import json
 from xml.etree.ElementTree import Element, SubElement, tostring
 
-def scrape_mangapark(num_pages=1):
+def scrape_mangapark(num_pages=50):
     print("Running: scrape_mangapark")
     base_url = 'https://mangapark.com/latest'
     json_file = 'mangapark_latest.json'
