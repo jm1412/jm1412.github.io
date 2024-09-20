@@ -83,13 +83,13 @@ def create_xml(entries, xml_file):
     channel = SubElement(root, 'channel')
 
     title_channel = SubElement(channel, 'title')
-    title_channel.text = "Baka Updates Manga - Latest Releases"
+    title_channel.text = "Manga Tracker"
     
     link_channel = SubElement(channel, 'link')
-    link_channel.text = "https://www.mangaupdates.com/"
+    link_channel.text = "https://eu.pythonanywhere.com/user/temppy/"
     
     description_channel = SubElement(channel, 'description')
-    description_channel.text = "Providing the latest manga release information"
+    description_channel.text = "Mangapark Release Tracker"
 
     for entry in entries:
         manga_title_chapter = f"{entry['manga']} - {entry['chapter']}"
