@@ -54,27 +54,35 @@ def scrape_mangapark(num_pages=5):
             manga_dict[manga_title] = list(chapter_set)
 
     # Build the XML structure
-    root = Element('rss', xmlns="http://purl.org/rss/1.0/", version="2.0")
+    root = Element('rss', version="2.0")
     channel = SubElement(root, 'channel')
     
     title_channel = SubElement(channel, 'title')
-    title_channel.text = "Mangapark Scraper"
+    title_channel.text = "Baka Updates Manga - Latest Releases"
     
     link_channel = SubElement(channel, 'link')
-    link_channel.text = "https://jm1412.github.io/mangapark_latest.xml"
+    link_channel.text = "https://www.mangaupdates.com/"
     
     description_channel = SubElement(channel, 'description')
-    description_channel.text = "Let's bring back RSS."
+    description_channel.text = "Providing the latest manga release information"
 
     for manga, chapters in manga_dict.items():
         manga_element = SubElement(channel, 'item')
+        
+        # Manga title as item title
         manga_title_element = SubElement(manga_element, 'title')
         manga_title_element.text = manga
         
+        # Link to the manga
+        manga_link_element = SubElement(manga_element, 'link')
+        manga_link_element.text = f"https://mangapark.com/title/{manga.replace(' ', '-').lower()}"  # Example link format
+
+        # Add chapters as separate items
         for chapter_title, chapter_link in chapters:
-            chapter_element = SubElement(manga_element, 'chapter')
+            chapter_element = SubElement(manga_element, 'item')  # New item for each chapter
             chapter_title_element = SubElement(chapter_element, 'title')
             chapter_title_element.text = chapter_title
+            
             chapter_link_element = SubElement(chapter_element, 'link')
             chapter_link_element.text = f"https://mangapark.com{chapter_link}"
 
